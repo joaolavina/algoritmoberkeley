@@ -13,27 +13,25 @@ public class Cliente {
 
         long relógio = System.currentTimeMillis() + (long) (Math.random() * 86400000) - 43200000;
         System.out.println("Relógio inicial: " + relógio + " " + new Time(relógio));
-        
-        while (true) {
-            try (Socket socket = new Socket(host, porta);
-                    DataOutputStream out = new DataOutputStream(socket.getOutputStream());
-                    DataInputStream in = new DataInputStream(socket.getInputStream())) {
 
-                socket.setKeepAlive(true);
+        try (Socket socket = new Socket(host, porta);
+                DataOutputStream out = new DataOutputStream(socket.getOutputStream());
+                DataInputStream in = new DataInputStream(socket.getInputStream())) {
 
-                while (!socket.isClosed() && socket.isConnected()) {
-                    in.readLong();
+            socket.setKeepAlive(true);
 
-                    out.writeLong(relógio);
-                    out.flush();
-                    long correcaoRelogio = in.readLong();
+            in.readLong();
 
-                    relógio += correcaoRelogio;
-                    System.out.println("Relógio ajustado para: " + new Time(relógio));
-                }
-            } catch (IOException e) {
-                System.err.println("Erro de conexão com o servidor: " + e.getMessage());
-            }
+            out.writeLong(relógio);
+            out.flush();
+            long correcaoRelogio = in.readLong();
+
+            relógio += correcaoRelogio;
+            System.out.println("Relógio ajustado para: " + new Time(relógio));
+
+        } catch (IOException e) {
+            System.err.println("Erro de conexão com o servidor: " + e.getMessage());
         }
+
     }
 }
